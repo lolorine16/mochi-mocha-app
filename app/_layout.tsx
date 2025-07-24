@@ -1,29 +1,31 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+// app/_layout.tsx
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
+import * as SystemUI from 'expo-system-ui';
+import { useEffect } from 'react';
+import { ActivityIndicator, StatusBar, Text, View } from 'react-native';
+import useFonts from '../hooks/useFonts';
+import './globals.css';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const fontsLoaded = useFonts();
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync('#F7E1D7'); // 👈 couleur de la nav bar Android
+  }, []);
+
+  if (!fontsLoaded) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+        <Text>Chargement des polices...</Text>
+      </View>
+    );
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <>
+      <StatusBar backgroundColor="#F7E1D7" barStyle="dark-content" />
+      <Stack screenOptions={{ headerShown: false }} />
+    </>
   );
 }
